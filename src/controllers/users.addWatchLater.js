@@ -21,8 +21,8 @@ const addWatchLater = async (req, res, next) => {
         const watchLaterInDb=await WatchLater.findOne({video:ObjectId(videoId),channelUserName});
         if(watchLaterInDb){
             console.log('This is already in Watch later',watchLaterInDb)
-            throw new APIError(400,'Watch Later Already in db');
             return;
+            // throw new APIError(400,'Watch Later Already in db');
         }
 
         const watchLater=await WatchLater.create({
@@ -32,15 +32,13 @@ const addWatchLater = async (req, res, next) => {
 
         console.log('watchLater:',watchLater)
 
-        const userInDb=await User.find({channelUserName}).select('-password -refreshToken');
-        console.log(userInDb);
-        res.status(200).json({userInDb});
-
-        
+        const resUser= await User.findOne({channelUserName}).select('-password -securityKey -refreshToken');
+        res.status(200).json({userInDb:resUser});
         
     } catch (error) {
         console.log(error);
-        throw new APIError(404,`Some error in Watch later ${error}`);
+        return;
+        // throw new APIError(404,`Some error in Watch later ${error}`);
        
     }
 };
